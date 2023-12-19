@@ -1,29 +1,14 @@
-/*
- * gc-opencommand
- * Copyright (C) 2022-2023 jie65535
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
 package com.github.jie65535.opencommand;
 
-import emu.lunarcore.LunarCore;
 import emu.lunarcore.plugin.Plugin;
 import emu.lunarcore.util.Crypto;
 import emu.lunarcore.util.JsonUtils;
 import org.slf4j.Logger;
 import spark.Spark;
-import java.io.*;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -41,7 +26,6 @@ public final class OpenCommandPlugin extends Plugin {
     }
 
     private OpenCommandConfig config;
-
     private OpenCommandData data;
 
     @Override
@@ -55,17 +39,19 @@ public final class OpenCommandPlugin extends Plugin {
 
     @Override
     public void onEnable() {
-        LunarCore.getHttpServer().getApp().post("/opencommand/api", OpenCommandHandler::handle);
-        response.header("Access-Control-Allow-Origin", "*");
-        // 允许特定的请求方法
-        response.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        // 允许特定的头部信息
-        response.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        LunarCore.getHttpServer().getApp().post("/opencommand/api", (request, response) -> {
+            // 允许所有来源的跨域请求
+            response.header("Access-Control-Allow-Origin", "*");
+            // 允许特定的请求方法
+            response.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            // 允许特定的头部信息
+            response.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-        // 处理你的路由请求，例如调用 OpenCommandHandler::handle 方法
-        OpenCommandHandler.handle(request, response);
-        return response;
-         });
+            
+            OpenCommandHandler.handle(request, response);
+            return response;
+        });
+
         getLogger().info("[OpenCommand] Enabled. https://github.com/jie65535/gc-opencommand-plugin");
     }
 
