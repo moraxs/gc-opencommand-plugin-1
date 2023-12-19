@@ -40,6 +40,8 @@ jobs:
         
       - name: Change permission
         run: chmod +x gradlew
+      - name: Run Gradle-down
+        run: ./gradlew downloadAll
       
       - name: Run Gradle
         run: ./gradlew jar
