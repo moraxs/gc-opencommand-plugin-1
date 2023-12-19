@@ -22,7 +22,7 @@ import emu.lunarcore.plugin.Plugin;
 import emu.lunarcore.util.Crypto;
 import emu.lunarcore.util.JsonUtils;
 import org.slf4j.Logger;
-
+import spark.Spark;
 import java.io.*;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
@@ -56,6 +56,16 @@ public final class OpenCommandPlugin extends Plugin {
     @Override
     public void onEnable() {
         LunarCore.getHttpServer().getApp().post("/opencommand/api", OpenCommandHandler::handle);
+        response.header("Access-Control-Allow-Origin", "*");
+        // 允许特定的请求方法
+        response.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        // 允许特定的头部信息
+        response.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+        // 处理你的路由请求，例如调用 OpenCommandHandler::handle 方法
+        OpenCommandHandler.handle(request, response);
+        return response;
+         });
         getLogger().info("[OpenCommand] Enabled. https://github.com/jie65535/gc-opencommand-plugin");
     }
 
